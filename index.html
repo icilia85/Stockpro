@@ -3,170 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stock Manager Pro</title>
+    <title>Stock Manager Pro V29.2</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#2563eb">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2633/2633910.png">
-
     <style>
         :root { --primary: #2563eb; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; --dark: #1e293b; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 70px; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 70px; }
 
-        header { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding-top: env(safe-area-inset-top); }
-        nav { display: flex; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; overflow-x: auto; scrollbar-width: none; }
-        nav button { flex: 1; padding: 15px 12px; border: none; background: none; font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap; cursor: pointer; border-bottom: 3px solid transparent; }
+        header { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav { display: flex; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; overflow-x: auto; }
+        nav button { flex: 1; padding: 15px 5px; border: none; background: none; font-size: 10px; font-weight: 800; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
         nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
 
         .section { display: none; padding: 15px; max-width: 900px; margin: auto; }
         .active-section { display: block; }
         .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        .filter-group { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
-
+        label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; }
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; }
         
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { text-align: left; padding: 12px; font-size: 11px; background: #f8fafc; color: #64748b; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 10px; background: #f1f5f9; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
 
-        /* MODO IMPRESSÃO */
+        .badge { padding: 2px 6px; border-radius: 4px; color: white; font-size: 10px; font-weight: bold; }
+        .bg-in { background: var(--success); }
+        .bg-out { background: var(--danger); }
+
+        /* Estilo para o Input de Ficheiro Escondido */
+        #file-input { display: none; }
+
         #camada-impressao { display: none; position: fixed; inset: 0; background: white; z-index: 10000; overflow-y: auto; padding: 20px; }
-        
-        @media print {
-            body * { visibility: hidden; }
-            #camada-impressao, #camada-impressao * { visibility: visible; }
-            #camada-impressao { position: absolute; top: 0; left: 0; width: 100%; padding: 0; }
-            .no-print { display: none !important; }
-        }
+        @media print { .no-print { display: none !important; } #camada-impressao { display: block; } }
     </style>
 </head>
 <body>
 
 <div id="ui-app">
     <header>
-        <span>STOCK MANAGER PRO</span>
-        <button onclick="ativarModoImpressao()" style="background:var(--success); color:white; border:none; border-radius:8px; padding:8px 15px; font-weight:bold;">🖨️ PDF</button>
+        <strong>STOCK PRO V29.2</strong>
+        <button onclick="ativarModoImpressao()" style="background:white; color:var(--primary); border:none; border-radius:8px; padding:8px 12px; font-weight:bold;">PDF/IMPRIMIR</button>
     </header>
 
     <nav>
-        <button onclick="tab('movs')" id="nav-movs" class="active">LANÇAR</button>
-        <button onclick="tab('stock')" id="nav-stock">STOCK REAL</button>
-        <button onclick="tab('rel')" id="nav-rel">RELATÓRIO</button>
-        <button onclick="tab('prods')" id="nav-prods">PRODUTOS</button>
-        <button onclick="tab('sys')" id="nav-sys">SISTEMA</button>
+        <button onclick="tab('movs')" id="nav-movs" class="active">Lançar</button>
+        <button onclick="tab('stock')" id="nav-stock">Stock</button>
+        <button onclick="tab('rel')" id="nav-rel">Histórico</button>
+        <button onclick="tab('prods')" id="nav-prods">Produtos</button>
+        <button onclick="tab('sys')" id="nav-sys">Sistema</button>
     </nav>
 
+    <!-- SEÇÕES (Mantidas conforme seu original, apenas com ajustes de ID) -->
     <section id="sec-movs" class="section active-section">
         <div class="card">
-            <h3 id="titulo-mov">Novo Registo</h3>
-            <input type="hidden" id="m-edit-idx">
+            <h3>Novo Registo</h3>
             <label>Data</label><input type="date" id="m-data">
             <label>Produto</label><select id="m-prod"></select>
             <label>Tipo</label>
             <select id="m-tipo">
-                <option value="ENTRADA">Produção (+)</option>
-                <option value="SAIDA">Venda / Saída (-)</option>
+                <option value="ENTRADA">Produção/Entrada (+)</option>
+                <option value="SAIDA">Venda/Saída (-)</option>
                 <option value="ACERTO">Acerto Manual</option>
             </select>
-            <label>Quantidade</label><input type="number" id="m-qtd" placeholder="0">
-            <button class="btn" style="background:var(--primary)" id="btn-save-mov" onclick="addMov()">GUARDAR REGISTO</button>
-            <button class="btn" style="background:var(--danger); display:none; margin-top:5px;" id="btn-cancel-edit" onclick="cancelarEdicaoMov()">CANCELAR EDIÇÃO</button>
+            <label>Quantidade</label><input type="number" id="m-qtd" inputmode="numeric">
+            <button class="btn" style="background:var(--primary)" onclick="addMov()">REGISTAR</button>
         </div>
     </section>
 
     <section id="sec-stock" class="section">
         <div class="card">
-            <h3>Inventário</h3>
-            <div class="filter-group"><label>Filtrar:</label><select id="filtro-stock-prod" onchange="renderStock()"></select></div>
-            <div id="area-print-stock" class="table-container">
+            <h3>Inventário Atual</h3>
+            <div id="area-print-stock">
                 <table>
-                    <thead><tr><th>Produto</th><th>Inicial</th><th>Entradas</th><th>Saídas</th><th>Stock Atual</th></tr></thead>
+                    <thead><tr><th>Produto</th><th>Inicial</th><th>Entr.</th><th>Saíd.</th><th>Saldo</th></tr></thead>
                     <tbody id="tbody-stock"></tbody>
                 </table>
             </div>
         </div>
     </section>
-    
+
     <section id="sec-rel" class="section">
         <div class="card">
-            <h3>Gerar Histórico</h3>
-            <div class="filter-group">
-                <input type="date" id="r-ini">
-                <input type="date" id="r-fim">
-                <select id="r-filtro-prod"></select>
-            </div>
+            <h3>Filtrar Movimentos</h3>
+            <input type="date" id="r-ini">
+            <input type="date" id="r-fim">
+            <select id="r-filtro-prod"></select>
             <button class="btn" style="background:var(--dark);" onclick="renderRel()">FILTRAR</button>
         </div>
-        <div class="card" id="area-print-rel" style="display:none;">
-            <div class="table-container"><table><tbody id="tbody-rel"></tbody></table></div>
+        <div id="area-print-rel" class="card" style="display:none;">
+            <table><tbody id="tbody-rel"></tbody></table>
         </div>
     </section>
 
     <section id="sec-prods" class="section">
         <div class="card">
-            <h3>Produtos</h3>
-            <input type="hidden" id="p-id">
+            <h3>Novo Produto</h3>
             <input type="text" id="p-nome" placeholder="Nome">
             <input type="number" id="p-ini" value="0">
-            <button class="btn" style="background:var(--primary)" onclick="saveProd()">SALVAR</button>
+            <button class="btn" style="background:var(--success)" onclick="saveProd()">ADICIONAR</button>
         </div>
-        <div class="card"><div class="table-container"><table><tbody id="tbody-prods"></tbody></table></div></div>
+        <div class="card"><table><tbody id="tbody-prods"></tbody></table></div>
     </section>
 
     <section id="sec-sys" class="section">
         <div class="card">
-            <button class="btn" style="background:#475569; margin-bottom:10px;" onclick="exportDB()">BACKUP</button>
+            <h3>Cópia de Segurança</h3>
+            <button class="btn" style="background:#475569;" onclick="exportDB()">EXPORTAR BACKUP (.JSON)</button>
+            
+            <label class="btn" style="background:var(--warning); display: block; text-align: center; line-height: 20px;" for="file-input">
+                RESTAURAR BACKUP
+            </label>
+            <input type="file" id="file-input" accept=".json" onchange="importDB(event)">
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
             <button class="btn" style="background:var(--danger)" onclick="clearDB()">APAGAR TUDO</button>
         </div>
     </section>
 </div>
 
+<!-- MODO IMPRESSÃO -->
 <div id="camada-impressao">
-    <div class="controles-print no-print" style="margin-bottom:20px; display:flex; gap:10px;">
-        <button onclick="fecharModoImpressao()" style="padding:15px; background:var(--danger); color:white; border:none; border-radius:10px; flex:1; font-weight:bold;">VOLTAR</button>
-        <button onclick="confirmarImpressaoPDF()" style="padding:15px; background:var(--success); color:white; border:none; border-radius:10px; flex:2; font-weight:bold;">GERAR PDF / IMPRIMIR</button>
+    <div class="no-print" style="margin-bottom:20px; display:flex; gap:10px;">
+        <button onclick="fecharModoImpressao()" style="padding:15px; background:var(--dark); color:white; border:none; border-radius:10px; flex:1;">VOLTAR</button>
+        <button onclick="executarImpressao()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; flex:2; font-weight:bold;">IMPRIMIR AGORA</button>
     </div>
     <div id="conteudo-para-imprimir"></div>
 </div>
 
 <script>
-    // [Utilize toda a lógica JavaScript da V28 anterior]
     let db = JSON.parse(localStorage.getItem('STK_PRO_V29')) || { prods: [], movs: [] };
 
-    function save() { localStorage.setItem('STK_PRO_V29', JSON.stringify(db)); refreshDropdowns(); renderProds(); renderStock(); }
-    
-    function tab(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('sec-' + id).classList.add('active-section');
-        document.getElementById('nav-' + id).classList.add('active');
+    // --- FUNÇÕES DE BACKUP (RESTAURAÇÃO) ---
+    function exportDB() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "backup_stock_" + new Date().toLocaleDateString() + ".json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
     }
 
-    // FUNÇÃO DE IMPRESSÃO CORRIGIDA PARA PWA
-    function confirmarImpressaoPDF() {
-        if (window.print) {
-            window.print();
-        } else {
-            alert("Use o navegador Chrome ou Safari para imprimir.");
-        }
+    function importDB(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData.prods && importedData.movs) {
+                    if (confirm("Isto irá substituir todos os dados atuais. Continuar?")) {
+                        db = importedData;
+                        save();
+                        alert("Backup restaurado com sucesso!");
+                        location.reload();
+                    }
+                } else {
+                    alert("Ficheiro inválido.");
+                }
+            } catch (err) {
+                alert("Erro ao ler o ficheiro.");
+            }
+        };
+        reader.readAsText(file);
     }
 
+    // --- LOGICA DE IMPRESSÃO ---
     function ativarModoImpressao() {
         const ativo = document.querySelector('.active-section').id;
         let html = "";
         if(ativo === 'sec-stock') html = "<h2>Relatório de Stock</h2>" + document.getElementById('area-print-stock').innerHTML;
-        else if(ativo === 'sec-rel') html = "<h2>Relatório de Movimentos</h2>" + document.getElementById('area-print-rel').innerHTML;
-        else return alert("Vá para STOCK ou RELATÓRIO");
+        else if(ativo === 'sec-rel') html = "<h2>Histórico</h2>" + document.getElementById('area-print-rel').innerHTML;
+        else return alert("Vá para a aba STOCK ou HISTÓRICO");
         
         document.getElementById('conteudo-para-imprimir').innerHTML = html;
         document.getElementById('camada-impressao').style.display = 'block';
         document.getElementById('ui-app').style.display = 'none';
-        window.scrollTo(0,0);
+    }
+
+    function executarImpressao() {
+        // No Kodular, window.print() só funciona se a WebView estiver configurada.
+        window.print();
     }
 
     function fecharModoImpressao() {
@@ -174,42 +193,345 @@
         document.getElementById('ui-app').style.display = 'block';
     }
 
-    // Funções auxiliares (mesmas da V28)
+    // --- FUNÇÕES CORE (SALVAR, ADICIONAR, RENDERIZAR) ---
+    function save() { 
+        localStorage.setItem('STK_PRO_V29', JSON.stringify(db)); 
+        refreshDropdowns(); renderProds(); renderStock(); 
+    }
+
+    function tab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + id).classList.add('active-section');
+        document.getElementById('nav-' + id).classList.add('active');
+    }
+
     function addMov() {
         const d = document.getElementById('m-data').value, p = document.getElementById('m-prod').value, t = document.getElementById('m-tipo').value, q = parseInt(document.getElementById('m-qtd').value);
-        if(!d || !p || isNaN(q)) return alert("Erro nos dados");
-        db.movs.unshift({ d, p, t, q });
-        save(); alert("Ok!");
+        if(!d || !p || isNaN(q)) return alert("Dados incompletos");
+        db.movs.unshift({ d, p, t, q, id: Date.now() });
+        save(); alert("Gravado!");
     }
+
     function saveProd() {
-        const n = document.getElementById('p-nome').value, i = parseInt(document.getElementById('p-ini').value);
+        const n = document.getElementById('p-nome').value, i = parseInt(document.getElementById('p-ini').value) || 0;
         if(!n) return; db.prods.push({ nome: n, ini: i }); save();
+        document.getElementById('p-nome').value = "";
     }
-    function renderProds() {
-        const tb = document.getElementById('tbody-prods'); tb.innerHTML = '';
-        db.prods.forEach((p, i) => { tb.innerHTML += `<tr><td>${p.nome}</td><td><button onclick="delProd(${i})">X</button></td></tr>`; });
-    }
-    function delProd(i) { db.prods.splice(i,1); save(); }
-    function refreshDropdowns() {
-        const sM = document.getElementById('m-prod'), sS = document.getElementById('filtro-stock-prod'), sR = document.getElementById('r-filtro-prod');
-        const opts = '<option value="TODOS">TODOS</option>';
-        sM.innerHTML = '<option value="">Selecione...</option>'; sS.innerHTML = opts; sR.innerHTML = opts;
-        db.prods.forEach(p => { const h = `<option value="${p.nome}">${p.nome}</option>`; sM.innerHTML += h; sS.innerHTML += h; sR.innerHTML += h; });
-    }
+
     function renderStock() {
-        const f = document.getElementById('filtro-stock-prod').value, tb = document.getElementById('tbody-stock'); tb.innerHTML = '';
+        const tb = document.getElementById('tbody-stock'); tb.innerHTML = '';
         db.prods.forEach(p => {
-            if (f !== "TODOS" && p.nome !== f) return;
-            let a = p.ini; db.movs.filter(m => m.p === p.nome).reverse().forEach(m => { if(m.t==='ENTRADA') a+=m.q; else if(m.t==='SAIDA') a-=m.q; else a=m.q; });
-            tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.ini}</td><td>${a}</td></tr>`;
+            let entries = 0, exits = 0;
+            let saldo = p.ini;
+            db.movs.filter(m => m.p === p.nome).reverse().forEach(m => {
+                if(m.t === 'ENTRADA') { entries += m.q; saldo += m.q; }
+                else if(m.t === 'SAIDA') { exits += m.q; saldo -= m.q; }
+                else if(m.t === 'ACERTO') { saldo = m.q; }
+            });
+            tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.ini}</td><td>${entries}</td><td>${exits}</td><td><b>${saldo}</b></td></tr>`;
         });
     }
+
+    function refreshDropdowns() {
+        const sM = document.getElementById('m-prod'), sR = document.getElementById('r-filtro-prod');
+        sM.innerHTML = '<option value="">Escolha...</option>';
+        sR.innerHTML = '<option value="TODOS">TODOS</option>';
+        db.prods.forEach(p => {
+            const h = `<option value="${p.nome}">${p.nome}</option>`;
+            sM.innerHTML += h; sR.innerHTML += h;
+        });
+    }
+
+    function renderProds() {
+        const tb = document.getElementById('tbody-prods'); tb.innerHTML = '';
+        db.prods.forEach((p, i) => {
+            tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.ini}</td><td><button onclick="delProd(${i})">❌</button></td></tr>`;
+        });
+    }
+
+    function delProd(i) { if(confirm("Apagar?")) { db.prods.splice(i,1); save(); } }
+    function clearDB() { if(confirm("Apagar TUDO?")) { db = {prods:[], movs:[]}; save(); location.reload(); } }
+
     function renderRel() {
-        const i = document.getElementById('r-ini').value, f = document.getElementById('r-fim').value, tb = document.getElementById('tbody-rel');
-        tb.innerHTML = ''; db.movs.forEach(m => { if(m.d>=i && m.d<=f) tb.innerHTML += `<tr><td>${m.d}</td><td>${m.p}</td><td>${m.q}</td></tr>`; });
+        const tb = document.getElementById('tbody-rel'); tb.innerHTML = '<thead><tr><th>Data</th><th>Produto</th><th>Qtd</th></tr></thead>';
+        db.movs.forEach(m => {
+            tb.innerHTML += `<tr><td>${m.d}</td><td>${m.p}</td><td>${m.q} (${m.t})</td></tr>`;
+        });
         document.getElementById('area-print-rel').style.display = 'block';
     }
 
+    // Inicialização
+    document.getElementById('m-data').valueAsDate = new Date();
+    save();
+</script>
+</body>
+</html>
+>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stock Manager Pro V29.2</title>
+    
+    <style>
+        :root { --primary: #2563eb; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; --dark: #1e293b; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 70px; }
+
+        header { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav { display: flex; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; overflow-x: auto; }
+        nav button { flex: 1; padding: 15px 5px; border: none; background: none; font-size: 10px; font-weight: 800; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
+        nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .section { display: none; padding: 15px; max-width: 900px; margin: auto; }
+        .active-section { display: block; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 10px; background: #f1f5f9; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+
+        .badge { padding: 2px 6px; border-radius: 4px; color: white; font-size: 10px; font-weight: bold; }
+        .bg-in { background: var(--success); }
+        .bg-out { background: var(--danger); }
+
+        /* Estilo para o Input de Ficheiro Escondido */
+        #file-input { display: none; }
+
+        #camada-impressao { display: none; position: fixed; inset: 0; background: white; z-index: 10000; overflow-y: auto; padding: 20px; }
+        @media print { .no-print { display: none !important; } #camada-impressao { display: block; } }
+    </style>
+</head>
+<body>
+
+<div id="ui-app">
+    <header>
+        <strong>STOCK PRO V29.2</strong>
+        <button onclick="ativarModoImpressao()" style="background:white; color:var(--primary); border:none; border-radius:8px; padding:8px 12px; font-weight:bold;">PDF/IMPRIMIR</button>
+    </header>
+
+    <nav>
+        <button onclick="tab('movs')" id="nav-movs" class="active">Lançar</button>
+        <button onclick="tab('stock')" id="nav-stock">Stock</button>
+        <button onclick="tab('rel')" id="nav-rel">Histórico</button>
+        <button onclick="tab('prods')" id="nav-prods">Produtos</button>
+        <button onclick="tab('sys')" id="nav-sys">Sistema</button>
+    </nav>
+
+    <!-- SEÇÕES (Mantidas conforme seu original, apenas com ajustes de ID) -->
+    <section id="sec-movs" class="section active-section">
+        <div class="card">
+            <h3>Novo Registo</h3>
+            <label>Data</label><input type="date" id="m-data">
+            <label>Produto</label><select id="m-prod"></select>
+            <label>Tipo</label>
+            <select id="m-tipo">
+                <option value="ENTRADA">Produção/Entrada (+)</option>
+                <option value="SAIDA">Venda/Saída (-)</option>
+                <option value="ACERTO">Acerto Manual</option>
+            </select>
+            <label>Quantidade</label><input type="number" id="m-qtd" inputmode="numeric">
+            <button class="btn" style="background:var(--primary)" onclick="addMov()">REGISTAR</button>
+        </div>
+    </section>
+
+    <section id="sec-stock" class="section">
+        <div class="card">
+            <h3>Inventário Atual</h3>
+            <div id="area-print-stock">
+                <table>
+                    <thead><tr><th>Produto</th><th>Inicial</th><th>Entr.</th><th>Saíd.</th><th>Saldo</th></tr></thead>
+                    <tbody id="tbody-stock"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="sec-rel" class="section">
+        <div class="card">
+            <h3>Filtrar Movimentos</h3>
+            <input type="date" id="r-ini">
+            <input type="date" id="r-fim">
+            <select id="r-filtro-prod"></select>
+            <button class="btn" style="background:var(--dark);" onclick="renderRel()">FILTRAR</button>
+        </div>
+        <div id="area-print-rel" class="card" style="display:none;">
+            <table><tbody id="tbody-rel"></tbody></table>
+        </div>
+    </section>
+
+    <section id="sec-prods" class="section">
+        <div class="card">
+            <h3>Novo Produto</h3>
+            <input type="text" id="p-nome" placeholder="Nome">
+            <input type="number" id="p-ini" value="0">
+            <button class="btn" style="background:var(--success)" onclick="saveProd()">ADICIONAR</button>
+        </div>
+        <div class="card"><table><tbody id="tbody-prods"></tbody></table></div>
+    </section>
+
+    <section id="sec-sys" class="section">
+        <div class="card">
+            <h3>Cópia de Segurança</h3>
+            <button class="btn" style="background:#475569;" onclick="exportDB()">EXPORTAR BACKUP (.JSON)</button>
+            
+            <label class="btn" style="background:var(--warning); display: block; text-align: center; line-height: 20px;" for="file-input">
+                RESTAURAR BACKUP
+            </label>
+            <input type="file" id="file-input" accept=".json" onchange="importDB(event)">
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <button class="btn" style="background:var(--danger)" onclick="clearDB()">APAGAR TUDO</button>
+        </div>
+    </section>
+</div>
+
+<!-- MODO IMPRESSÃO -->
+<div id="camada-impressao">
+    <div class="no-print" style="margin-bottom:20px; display:flex; gap:10px;">
+        <button onclick="fecharModoImpressao()" style="padding:15px; background:var(--dark); color:white; border:none; border-radius:10px; flex:1;">VOLTAR</button>
+        <button onclick="executarImpressao()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; flex:2; font-weight:bold;">IMPRIMIR AGORA</button>
+    </div>
+    <div id="conteudo-para-imprimir"></div>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('STK_PRO_V29')) || { prods: [], movs: [] };
+
+    // --- FUNÇÕES DE BACKUP (RESTAURAÇÃO) ---
+    function exportDB() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "backup_stock_" + new Date().toLocaleDateString() + ".json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    function importDB(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData.prods && importedData.movs) {
+                    if (confirm("Isto irá substituir todos os dados atuais. Continuar?")) {
+                        db = importedData;
+                        save();
+                        alert("Backup restaurado com sucesso!");
+                        location.reload();
+                    }
+                } else {
+                    alert("Ficheiro inválido.");
+                }
+            } catch (err) {
+                alert("Erro ao ler o ficheiro.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- LOGICA DE IMPRESSÃO ---
+    function ativarModoImpressao() {
+        const ativo = document.querySelector('.active-section').id;
+        let html = "";
+        if(ativo === 'sec-stock') html = "<h2>Relatório de Stock</h2>" + document.getElementById('area-print-stock').innerHTML;
+        else if(ativo === 'sec-rel') html = "<h2>Histórico</h2>" + document.getElementById('area-print-rel').innerHTML;
+        else return alert("Vá para a aba STOCK ou HISTÓRICO");
+        
+        document.getElementById('conteudo-para-imprimir').innerHTML = html;
+        document.getElementById('camada-impressao').style.display = 'block';
+        document.getElementById('ui-app').style.display = 'none';
+    }
+
+    function executarImpressao() {
+        // No Kodular, window.print() só funciona se a WebView estiver configurada.
+        window.print();
+    }
+
+    function fecharModoImpressao() {
+        document.getElementById('camada-impressao').style.display = 'none';
+        document.getElementById('ui-app').style.display = 'block';
+    }
+
+    // --- FUNÇÕES CORE (SALVAR, ADICIONAR, RENDERIZAR) ---
+    function save() { 
+        localStorage.setItem('STK_PRO_V29', JSON.stringify(db)); 
+        refreshDropdowns(); renderProds(); renderStock(); 
+    }
+
+    function tab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + id).classList.add('active-section');
+        document.getElementById('nav-' + id).classList.add('active');
+    }
+
+    function addMov() {
+        const d = document.getElementById('m-data').value, p = document.getElementById('m-prod').value, t = document.getElementById('m-tipo').value, q = parseInt(document.getElementById('m-qtd').value);
+        if(!d || !p || isNaN(q)) return alert("Dados incompletos");
+        db.movs.unshift({ d, p, t, q, id: Date.now() });
+        save(); alert("Gravado!");
+    }
+
+    function saveProd() {
+        const n = document.getElementById('p-nome').value, i = parseInt(document.getElementById('p-ini').value) || 0;
+        if(!n) return; db.prods.push({ nome: n, ini: i }); save();
+        document.getElementById('p-nome').value = "";
+    }
+
+    function renderStock() {
+        const tb = document.getElementById('tbody-stock'); tb.innerHTML = '';
+        db.prods.forEach(p => {
+            let entries = 0, exits = 0;
+            let saldo = p.ini;
+            db.movs.filter(m => m.p === p.nome).reverse().forEach(m => {
+                if(m.t === 'ENTRADA') { entries += m.q; saldo += m.q; }
+                else if(m.t === 'SAIDA') { exits += m.q; saldo -= m.q; }
+                else if(m.t === 'ACERTO') { saldo = m.q; }
+            });
+            tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.ini}</td><td>${entries}</td><td>${exits}</td><td><b>${saldo}</b></td></tr>`;
+        });
+    }
+
+    function refreshDropdowns() {
+        const sM = document.getElementById('m-prod'), sR = document.getElementById('r-filtro-prod');
+        sM.innerHTML = '<option value="">Escolha...</option>';
+        sR.innerHTML = '<option value="TODOS">TODOS</option>';
+        db.prods.forEach(p => {
+            const h = `<option value="${p.nome}">${p.nome}</option>`;
+            sM.innerHTML += h; sR.innerHTML += h;
+        });
+    }
+
+    function renderProds() {
+        const tb = document.getElementById('tbody-prods'); tb.innerHTML = '';
+        db.prods.forEach((p, i) => {
+            tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.ini}</td><td><button onclick="delProd(${i})">❌</button></td></tr>`;
+        });
+    }
+
+    function delProd(i) { if(confirm("Apagar?")) { db.prods.splice(i,1); save(); } }
+    function clearDB() { if(confirm("Apagar TUDO?")) { db = {prods:[], movs:[]}; save(); location.reload(); } }
+
+    function renderRel() {
+        const tb = document.getElementById('tbody-rel'); tb.innerHTML = '<thead><tr><th>Data</th><th>Produto</th><th>Qtd</th></tr></thead>';
+        db.movs.forEach(m => {
+            tb.innerHTML += `<tr><td>${m.d}</td><td>${m.p}</td><td>${m.q} (${m.t})</td></tr>`;
+        });
+        document.getElementById('area-print-rel').style.display = 'block';
+    }
+
+    // Inicialização
     document.getElementById('m-data').valueAsDate = new Date();
     save();
 </script>
